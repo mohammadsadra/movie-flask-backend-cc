@@ -1,9 +1,8 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:get/instance_manager.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:moviefront/Model/Movie.dart';
-import 'package:get/get.dart';
 
 class Service {
   final box = GetStorage();
@@ -12,7 +11,8 @@ class Service {
   Service() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://movie-backend-imohammadsadra.fandogh.cloud/',
+        baseUrl: 'http://127.0.0.1:5000/',
+        // baseUrl: 'https://movie-python-back-imohammadsadra.fandogh.cloud',
       ),
     );
   }
@@ -28,17 +28,17 @@ class Service {
       return loaded;
     } on DioError catch (e) {
       if (e.response != null) {
-        Get.snackbar(
-          'Failed!',
-          'Try again!',
-          backgroundColor: Colors.red,
-          icon: const Icon(
-            Icons.error,
-            color: Colors.white,
-          ),
-        );
         return e.response;
       }
     }
+  }
+
+  Future<String> uploadFile(file, filename, id) async {
+    FormData formData = FormData.fromMap({
+      "file": MultipartFile.fromBytes(file, filename: filename),
+    });
+    var response =
+        await Service().dio.post("/uploadVoiceFile/$id", data: formData);
+    return response.data;
   }
 }

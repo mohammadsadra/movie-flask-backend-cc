@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
@@ -154,8 +156,14 @@ class HomeScreen extends StatelessWidget {
                                       await FilePicker.platform.pickFiles();
 
                                   if (result != null) {
-                                    File file = File(result.files.single.path!);
-                                    print(file);
+                                    final fileBytes = result.files.first.bytes;
+                                    final fileName = result.files.first.name;
+
+                                    await movie.sendComment(
+                                      fileBytes,
+                                      fileName,
+                                      movie.movies[index].id,
+                                    );
                                   } else {
                                     Get.snackbar(
                                         'Error', 'You cancled file picker.');
