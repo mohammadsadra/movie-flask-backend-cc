@@ -1,14 +1,11 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
-import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
+
 import 'package:moviefront/movie_controller.dart';
 
 class HomeScreen extends StatelessWidget {
+  var mviCtrl = Get.put(MovieController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,10 +16,22 @@ class HomeScreen extends StatelessWidget {
           PopupMenuButton(
             offset: const Offset(0, 50),
             onSelected: (value) {
-              if (value == 1) {}
-              if (value == 2) {}
-              if (value == 3) {}
-              if (value == 4) {}
+              if (value == 1) {
+                mviCtrl.language.value = 'en';
+                mviCtrl.update();
+              }
+              if (value == 2) {
+                mviCtrl.language.value = 'ar';
+                mviCtrl.update();
+              }
+              if (value == 3) {
+                mviCtrl.language.value = 'es';
+                mviCtrl.update();
+              }
+              if (value == 4) {
+                mviCtrl.language.value = 'fr';
+                mviCtrl.update();
+              }
             },
             color: const Color.fromRGBO(29, 31, 53, 1),
             icon: const Icon(Icons.language),
@@ -47,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                value: 1,
+                value: 2,
               ),
               PopupMenuItem(
                 height: 20,
@@ -58,7 +67,7 @@ class HomeScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                value: 1,
+                value: 3,
               ),
               PopupMenuItem(
                 height: 20,
@@ -69,7 +78,7 @@ class HomeScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                value: 1,
+                value: 4,
               ),
             ],
           ),
@@ -132,6 +141,16 @@ class HomeScreen extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 behavior: HitTestBehavior.opaque,
+                                onTap: () async {
+                                  movie
+                                      .getMovieComments(movie.movies[index].id)
+                                      .then(
+                                        (value) => {
+                                          movie.update(),
+                                          _openSheet(context),
+                                        },
+                                      );
+                                },
                                 child: Container(
                                   width: 200,
                                   alignment: Alignment.center,
@@ -201,5 +220,128 @@ class HomeScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget makeDissmissble({required Widget child, context}) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => Navigator.of(context).pop(),
+        child: GestureDetector(
+          onTap: () {},
+          child: child,
+        ),
+      );
+
+  void _openSheet(context) {
+    var ctrl = Get.put(MovieController());
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) {
+          return makeDissmissble(
+            context: context,
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.5,
+              minChildSize: 0.3,
+              maxChildSize: 0.8,
+              builder: (_, controller) => Container(
+                decoration: const BoxDecoration(
+                  color: Color.fromRGBO(8, 11, 34, 1),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(30),
+                  ),
+                ),
+                child: ListView(
+                  controller: controller,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: Obx(() {
+                        return !ctrl.isCommentLoading.value
+                            ? createCommentList()
+                            : const Center(child: CircularProgressIndicator());
+                      }),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget createCommentList() {
+    List<Widget> list = [];
+    var ctrl = Get.put(MovieController());
+    if (ctrl.movieCms.isNotEmpty) {
+      list.add(Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.only(bottom: 20),
+        child: const Text(
+          'All comments',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ));
+      for (var i = 0; i < ctrl.movieCms.length; i++) {
+        list.add(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: Get.width - 50,
+                margin: const EdgeInsets.only(bottom: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ctrl.movieCms[i].username,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      ctrl.movieCms[i].comment,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+        list.add(Container(
+          margin: const EdgeInsets.only(bottom: 5, top: 5),
+          color: Colors.white,
+          height: 1,
+          width: Get.width,
+        ));
+      }
+    } else {
+      list.add(
+        Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(20),
+          child: const Text(
+            'No comments',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(children: list);
   }
 }

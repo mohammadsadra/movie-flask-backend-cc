@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' as gg;
 import 'package:get_storage/get_storage.dart';
+import 'package:moviefront/Model/Comment.dart';
 import 'package:moviefront/Model/Movie.dart';
 
 class Service {
@@ -33,12 +35,36 @@ class Service {
     }
   }
 
-  Future<String> uploadFile(file, filename, id) async {
+  Future getMovieComments(id, lang) async {
+    try {
+      var response =
+          await Service().dio.get('/getComments/$id' + '?lang=' + lang);
+      print(response.data);
+      List<Comment> loaded = [];
+      if (response.data == null) {
+        return loaded;
+      }
+
+      for (int i = 0; i < response.data.length; i++) {
+        var res = Comment.fromJson(response.data[i]);
+        loaded.add(res);
+      }
+
+      return loaded;
+    } on DioError catch (e) {
+      if (e.response != null) {
+        return e.response;
+      }
+    }
+  }
+
+  Future uploadFile(file, filename, id) async {
     FormData formData = FormData.fromMap({
       "file": MultipartFile.fromBytes(file, filename: filename),
     });
     var response =
         await Service().dio.post("/uploadVoiceFile/$id", data: formData);
-    return response.data;
+    // gg.Get.snackbar('Status', response.data['value']);
+    return response.data['value'];
   }
 }
