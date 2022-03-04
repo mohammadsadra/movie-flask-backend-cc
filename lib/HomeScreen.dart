@@ -185,7 +185,10 @@ class HomeScreen extends StatelessWidget {
                                     );
                                   } else {
                                     Get.snackbar(
-                                        'Error', 'You cancled file picker.');
+                                      'Error',
+                                      'You cancled file picker.',
+                                      colorText: Colors.white,
+                                    );
                                   }
                                 },
                                 child: Container(
@@ -196,13 +199,15 @@ class HomeScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10),
                                     color: const Color.fromRGBO(29, 31, 53, 1),
                                   ),
-                                  child: const Text(
-                                    'Add Comment',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                    ),
-                                  ),
+                                  child: movie.isVoiceSending.value
+                                      ? const CircularProgressIndicator()
+                                      : const Text(
+                                          'Add Comment',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                          ),
+                                        ),
                                 ),
                               )
                             ],

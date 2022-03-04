@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart' as gg;
 import 'package:get_storage/get_storage.dart';
 import 'package:moviefront/Model/Comment.dart';
 import 'package:moviefront/Model/Movie.dart';
@@ -61,7 +63,11 @@ class Service {
     });
     var response =
         await Service().dio.post("/uploadVoiceFile/$id", data: formData);
-    // gg.Get.snackbar('Status', response.data['value']);
+    gg.Get.snackbar(
+      'Status',
+      response.data['value'],
+      colorText: Colors.white,
+    );
     return response.data['value'];
   }
 }
