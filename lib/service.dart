@@ -1,7 +1,4 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart' as gg;
 import 'package:get_storage/get_storage.dart';
 import 'package:moviefront/Model/Comment.dart';
 import 'package:moviefront/Model/Movie.dart';
