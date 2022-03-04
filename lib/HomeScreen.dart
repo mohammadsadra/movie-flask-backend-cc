@@ -171,8 +171,14 @@ class HomeScreen extends StatelessWidget {
                               GestureDetector(
                                 behavior: HitTestBehavior.opaque,
                                 onTap: () async {
+                                  if (movie.isVoiceSending.value) {
+                                    return;
+                                  }
                                   FilePickerResult? result =
-                                      await FilePicker.platform.pickFiles();
+                                      await FilePicker.platform.pickFiles(
+                                    type: FileType.custom,
+                                    allowedExtensions: ['mp3'],
+                                  );
 
                                   if (result != null) {
                                     final fileBytes = result.files.first.bytes;
