@@ -39,6 +39,7 @@ class MovieController extends GetxController {
 
   Future sendComment(file, filename, id) async {
     isVoiceSending.value = true;
+    update();
     var response = Service().uploadFile(file, filename, id);
     response.then(
       (value) => {

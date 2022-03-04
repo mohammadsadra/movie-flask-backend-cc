@@ -12,8 +12,8 @@ class Service {
   Service() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://127.0.0.1:5000/',
-        // baseUrl: 'https://movie-python-back-imohammadsadra.fandogh.cloud',
+        // baseUrl: 'http://127.0.0.1:5000/',
+        baseUrl: 'https://movie-python-back-imohammadsadra.fandogh.cloud',
       ),
     );
   }
